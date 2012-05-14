@@ -105,7 +105,7 @@ var css_styles = {
 // context and values being dicts of css properties
 /**
  * The javascript:
- * "#idname": { "color": "black" }
+ * { "#idname": { "color": "black" } }
  *
  * becomes CSS:
  * #idname {
@@ -134,86 +134,94 @@ $(function(){
     }
   }
 
-  $('a[href*="youtube.com"]').hoverIntent(
-    function(){
-      var card = hovercard.clone();
-      card.children().hide();
-      $("#yt-hover").remove();  // Remove existing hovercard if necessary
-      card.mouseover(function(){ hovering = true; });
-      card.mouseout(function(){ hovering = false; setTimeout(yt_hide, 100); });
+  function fadein(){
+    var card = hovercard.clone();
+    card.children().hide();
+    $("#yt-hover").remove();  // Remove existing hovercard if necessary
+    card.mouseover(function(){ hovering = true; });
+    card.mouseout(function(){ hovering = false; setTimeout(yt_hide, 100); });
 
-      var link = $(this).first();
-     var uri = parseUri(link.attr('href'));
-//      var vid = link.attr('href').match(/[?&]v=([_A-Za-z\d\-]+)/);
-      if(uri.path == "/watch" && uri.queryKey.v){
-        var vid = uri.queryKey.v;
-
-        hovering = true;
-        $.ajax({
-          url: 'https://gdata.youtube.com/feeds/api/videos/' + vid + '?v=2&alt=json',
-          type: 'GET',
-          dataType: 'json',
-          beforeSend: function () {
-            card.find("#yt-hover-loading").text(
-              'Loading video data...').show();
-          },
-          success: function (data) {
-            data = data.entry;
-            if(data.title){
-              card.find("#yt-hover-title").text(data.title.$t);
-            }
-            if(data.author.length > 0){
-              card.find("#yt-hover-author").text(data.author[0].name.$t);
-            }
-            if(data.media$group){
-              var media = data.media$group;
-              if(media.media$thumbnail.length > 0){
-                var thumb = media.media$thumbnail[0];
-                card.find("#yt-hover-thumb").append(
-                  '<img src="' + thumb.url.replace("http", "https") + '" />');
-              }
-              if(media.media$description){
-                card.find("#yt-hover-desc").text(
-                  media.media$description.$t.substr(
-                    0, max_description_length));
-              }
-              if(media.media$content.length > 0){
-                card.find("#yt-hover-time").text(
-                  secondstotime(media.media$content[0].duration));
-              }
-            }
-            if(data.yt$rating){
-                card.find("#yt-hover-likes").text(
-                  data.yt$rating.numLikes + "\u21EA");
-            }
-            card.children().show();
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            card.find("#yt-hover-err").text(
-              'Error retrieving info: ' + errorThrown).show();
-          },
-          complete: function () {
-            $('#yt-hover-loading').remove();
-          }
-        });
-      }
-      else{
-        card.find("#yt-hover-err").text(
-              'Could not parse valid video ID').show();
-      }
-
-      $("body").append(card);
-      
-      var pos = link.offset();
-      pos.top += link.height();
-      card.offset(pos);
-      card.fadeIn();
-    },
-    function(){
-      hovering = false;
-      setTimeout(yt_hide, 100);
+    var link = $(this).first();
+    var uri = parseUri(link.attr('href'));
+    var vid = null;
+    
+    if(uri.host.search("youtube.com") >= 0){
+      vid = uri.queryKey.v;
     }
-  );
+    else if(uri.host.search("youtu.be") >= 0){
+      vid = uri.directory.substr(1);
+    }
+
+    if(vid){
+      hovering = true;
+      $.ajax({
+        url: 'https://gdata.youtube.com/feeds/api/videos/' + vid + '?v=2&alt=json',
+        type: 'GET',
+        dataType: 'json',
+        beforeSend: function () {
+          card.find("#yt-hover-loading").text(
+            'Loading video data...').show();
+        },
+        success: function (data) {
+          data = data.entry;
+          if(data.title){
+            card.find("#yt-hover-title").text(data.title.$t);
+          }
+          if(data.author.length > 0){
+            card.find("#yt-hover-author").text(data.author[0].name.$t);
+          }
+          if(data.media$group){
+            var media = data.media$group;
+            if(media.media$thumbnail.length > 0){
+              var thumb = media.media$thumbnail[0];
+              card.find("#yt-hover-thumb").append(
+                '<img src="' + thumb.url.replace("http", "https") + '" />');
+            }
+            if(media.media$description){
+              card.find("#yt-hover-desc").text(
+                media.media$description.$t.substr(
+                  0, max_description_length));
+            }
+            if(media.media$content.length > 0){
+              card.find("#yt-hover-time").text(
+                secondstotime(media.media$content[0].duration));
+            }
+          }
+          if(data.yt$rating){
+              card.find("#yt-hover-likes").text(
+                data.yt$rating.numLikes + "\u21EA");
+          }
+          card.children().show();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          card.find("#yt-hover-err").text(
+            'Error retrieving info: ' + errorThrown).show();
+        },
+        complete: function () {
+          $('#yt-hover-loading').remove();
+        }
+      });
+    }
+    else{
+      card.find("#yt-hover-err").text(
+            'Could not parse valid video ID').show();
+    }
+
+    $("body").append(card);
+    
+    var pos = link.offset();
+    pos.top += link.height();
+    card.offset(pos);
+    card.fadeIn();
+  }
+  
+  function fadeout(){
+    hovering = false;
+    setTimeout(yt_hide, 100);
+  }
+  
+  $('a[href*="youtube.com"]').hoverIntent(fadein, fadeout);
+  $('a[href*="youtu.be"]').hoverIntent(fadein, fadeout);
 });
 
 //window.addEventListener("load", main, false);
