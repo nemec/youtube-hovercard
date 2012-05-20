@@ -220,8 +220,6 @@ $(function(){
     setTimeout(yt_hide, 100);
   }
   
-  $('a[href*="youtube.com"]').hoverIntent(fadein, fadeout);
-  $('a[href*="youtu.be"]').hoverIntent(fadein, fadeout);
+  $('a[href*="youtube.com"]').livequery(function(){$(this).hoverIntent(fadein, fadeout)});
+  $('a[href*="youtu.be"]').livequery(function(){$(this).hoverIntent(fadein, fadeout)});
 });
-
-//window.addEventListener("load", main, false);

@@ -2,6 +2,7 @@
 <head>
 <script type="text/javascript" src="yt-hover/jquery.min.js"></script>
 <script type="text/javascript" src="yt-hover/jquery.hoverIntent.min.js"></script>
+<script type="text/javascript" src="yt-hover/jquery.livequery.min.js"></script>
 <script type="text/javascript" src="yt-hover/parseuri.js"></script>
 <script type="text/javascript" src="yt-hover/yt-hover.user.js"></script>
 </head>
@@ -20,6 +21,21 @@
 <p><a href="http://www.youtube.com/watch?v=W4gkUDHR7VU&feature=relmfu" target="_blank">http://www.youtube.com/watch?v=W4gkUDHR7VU&feature=relmfu</a></p>
 
 <p><a href="http://www.youtu.be/_aInQ4x_HYM" target="_blank">http://www.youtu.be/_aInQ4x_HYM</a></p>
+
+<script type="text/javascript">
+  function loadLiveQuery(){
+    $("#lq-placeholder").append(
+      $('<a href="http://www.youtube.com/watch?v=_aInQ4x_HYM" ' +
+        'target="_blank">http://www.youtube.com/watch?v=_aInQ4x_HYM</a>'));
+  }
+</script>
+
+
+<input type="button" value="Load Livequery Test Link" onclick="loadLiveQuery();"/>
+
+<div id="lq-placeholder"></div>
+
+
 </div>
 </body>
 </html>

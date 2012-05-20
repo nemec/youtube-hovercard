@@ -5,6 +5,7 @@
       "include_globs": [  ],
       "js": [ "jquery.min.js",
               "jquery.hoverIntent.min.js",
+              "jquery.livequery.min.js",
               "parseuri.js",
               "yt-hover.user.js" ],
       "matches": [ "http://*/*", "https://*/*" ],
