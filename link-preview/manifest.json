@@ -7,7 +7,9 @@
               "jquery.hoverIntent.min.js",
               "jquery.livequery.min.js",
               "parseuri.js",
-              "yt-hover.user.js" ],
+              "link-preview.user.js",
+              "youtube.js",
+              "default.js"],
       "matches": [ "http://*/*", "https://*/*" ],
       "run_at": "document_idle"
    } ],
@@ -15,5 +17,5 @@
    "content_security_policy": "img-src https://i.ytimg.com",
    "description": "Add video title and description under youtube links.",
    "name": "Video Hovercard",
-   "version": "1.2"
+   "version": "1.3"
 }
